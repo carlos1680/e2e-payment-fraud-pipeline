@@ -1,9 +1,8 @@
-from pyspark.sql.types import StructType, StructField, StringType, DoubleType, TimestampType
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType
 
-# This schema matches exactly our raw JSON generator
 PAYMENTS_RAW_SCHEMA = StructType([
     StructField("event_id", StringType(), True),
-    StructField("event_ts", StringType(), True), # Read as string first to handle ISO format
+    StructField("event_ts", StringType(), True),
     StructField("payment_id", StringType(), True),
     StructField("user_id", StringType(), True),
     StructField("merchant_id", StringType(), True),

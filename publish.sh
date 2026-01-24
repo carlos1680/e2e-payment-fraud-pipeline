@@ -2,114 +2,67 @@
 set -e
 
 # ============================================================================
-# CONFIG
+# CONFIGURACIÓN DEL STACK
 # ============================================================================
 BIGDATA_BASE="$HOME/Documentos/docker-compose-contenedores/bigdata/volumenes"
 BIGDATA_SHARED="$BIGDATA_BASE/shared"
-BIGDATA_MINIO="$BIGDATA_SHARED/minio/data"
+# Landing Zone donde Spark ve los archivos como locales
+BIGDATA_MINIO_SHARE="$BIGDATA_SHARED/minioshareddata" 
 PROJECT_NAME="fraud_pipeline"
 
-# Colors
+# Colores
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
 NC='\033[0m'
-
-print_ok()    { echo -e "${GREEN}[✓]${NC} $1"; }
-print_warn()  { echo -e "${YELLOW}[!]${NC} $1"; }
-print_err()   { echo -e "${RED}[✗]${NC} $1"; }
+print_ok() { echo -e "${GREEN}[✓]${NC} $1"; }
 
 # ============================================================================
-# INFRA (one-time safety net)
+# 1. INFRAESTRUCTURA
 # ============================================================================
-prepare_infra() {
-    print_ok "Preparing MinIO directories (if missing)..."
+print_ok "⚙️ Preparando directorios en Share..."
+# Creamos la carpeta de aterrizaje (Landing)
+sudo mkdir -p "$BIGDATA_MINIO_SHARE/landing/payments"
 
-    DIRS=(
-        "$BIGDATA_MINIO/bronze/payments"
-        "$BIGDATA_MINIO/seed_data"
-        "$BIGDATA_MINIO/silver"
-        "$BIGDATA_MINIO/silver/payments_clean"
-    )
-
-    for d in "${DIRS[@]}"; do
-        if [ ! -d "$d" ]; then
-            print_warn "Creating $d"
-            sudo mkdir -p "$d"
-        fi
-        # ✅ Permisos para que Spark (UID 1000) pueda escribir/borrar
-        sudo chmod -R 777 "$d"
-        sudo chown -R 1000:1000 "$d"
-    done
-
-    # 1. Cambiamos el dueño de TODO el árbol de silver al UID 1000 (Spark)
-    #sudo chown -R 1000:1000 $BIGDATA_MINIO/silver
-
-    # 2. Aseguramos que el padre (silver) permita escribir al dueño
-   #sudo chmod -R 775 $BIGDATA_MINIO/silver
-}
+# Permisos generales para el volumen compartido
+sudo chmod -R 777 "$BIGDATA_SHARED"
+sudo chown -R 1000:1000 "$BIGDATA_SHARED"
 
 # ============================================================================
-# PUBLISH
+# 2. GENERACIÓN DE DATOS
 # ============================================================================
-publish_spark() {
-    print_ok "Publishing Spark jobs..."
-    TARGET="$BIGDATA_SHARED/scripts_airflow/$PROJECT_NAME"
-    mkdir -p "$TARGET"
-    rsync -av --delete spark_jobs/ "$TARGET/"
-    
-    
-    # Fix permissions so Airflow/Spark containers can read
-    print_ok "Setting permissions for Spark jobs..."
-    find "$TARGET" -type f -name "*.py" -exec chmod 666 {} \;
-}
+print_ok "⚡ Ejecutando Generador de Datos..."
 
-publish_dags() {
-    print_ok "Publishing Airflow DAGs..."
-    TARGET="$BIGDATA_SHARED/dags_airflow"
-    mkdir -p "$TARGET"
+# ✅ CORRECCIÓN: Ejecutamos el script desde su ubicación real 'data/'
+# Como se ejecuta desde la raíz, el output irá a 'data/input_events' correctamente
+python3 data/raw_generator.py
 
-    if [ -d "dags" ] && [ "$(ls -A dags 2>/dev/null)" ]; then
-        rsync -av dags/ "$TARGET/"
-        
-        # Fix permissions so Airflow can read DAGs
-        print_ok "Setting permissions for DAGs..."
-        find "$TARGET" -type f -name "*.py" -exec chmod 666 {} \;
-    else
-        print_warn "No DAGs to publish"
-    fi
-}
+print_ok "📦 Moviendo datos a Landing Zone..."
+# Sincronizamos desde la carpeta local data/input_events hacia el Share
+if [ -d "data/input_events" ]; then
+    rsync -av --delete data/input_events/ "$BIGDATA_MINIO_SHARE/landing/payments/"
+fi
 
-publish_data() {
-    print_ok "Publishing data to MinIO..."
-
-    if [ -d "data/input_events" ] && [ "$(ls -A data/input_events 2>/dev/null)" ]; then
-        rsync -av data/input_events/ "$BIGDATA_MINIO/bronze/payments/"
-    fi
-
-    if [ -d "data/seed_data" ] && [ "$(ls -A data/seed_data 2>/dev/null)" ]; then
-        rsync -av data/seed_data/ "$BIGDATA_MINIO/seed_data/"
-    fi
-}
+# Aseguramos permisos (UID 1000) para que Spark pueda leer
+sudo chown -R 1000:1000 "$BIGDATA_MINIO_SHARE/landing"
+sudo chmod -R 777 "$BIGDATA_MINIO_SHARE/landing"
 
 # ============================================================================
-# MAIN
+# 3. PUBLICACIÓN DE CÓDIGO
 # ============================================================================
-main() {
-    echo "======================================================="
-    echo "  FRAUD PIPELINE - PUBLISH"
-    echo "======================================================="
+print_ok "📝 Publicando Scripts y DAGs..."
 
-    prepare_infra
-    publish_spark
-    publish_dags
-    publish_data
+# Scripts de Spark
+TARGET_SPARK="$BIGDATA_SHARED/scripts_airflow/$PROJECT_NAME"
+mkdir -p "$TARGET_SPARK"
+# Tu tree muestra 'spark_jobs' en la raíz, esto es correcto:
+rsync -av --delete spark_jobs/ "$TARGET_SPARK/"
 
-    echo "======================================================="
-    print_ok "Publish finished successfully"
-    echo "   - DAGs should appear in Airflow within 30-60 seconds"
-    echo "   - Check: http://localhost:8090"
-    echo "======================================================="
-}
+# DAGs de Airflow
+TARGET_DAGS="$BIGDATA_SHARED/dags_airflow"
+mkdir -p "$TARGET_DAGS"
+# Tu tree muestra 'dags' en la raíz, esto es correcto:
+rsync -av dags/ "$TARGET_DAGS/"
 
-main
+# Permisos de lectura finales
+find "$BIGDATA_SHARED" -type f -name "*.py" -exec chmod 666 {} \; 2>/dev/null || true
+
+print_ok "🚀 Pipeline desplegado correctamente."
