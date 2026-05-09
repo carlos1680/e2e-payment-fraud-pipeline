@@ -22,7 +22,7 @@ Project repo: [e2e-payment-fraud-pipeline](https://github.com/carlos1680/e2e-pay
 
 1. **Synthetic events** are generated as **JSON Lines** (`data/input_events/*.json`).
 2. Events are copied into the BIGDATASTACK shared MinIO data directory:
-   - Host path: `big-data-stack/volumenes/shared/minio/data/bronze/payments/`
+   - Host path: `bigdata_stack_platform/volumenes/shared/minioshareddata/landing/payments/`
    - Inside Spark containers: `/opt/minio/shareddata/bronze/payments/`
 3. **Spark (Bronze → Silver)** reads raw JSON and writes cleaned Parquet to MinIO bucket:
    - `s3a://data/silver/payments_clean/`
@@ -103,11 +103,11 @@ This creates a file like:
 
 This repo includes a helper script `publish.sh` that copies:
 
-- Spark jobs → `big-data-stack/volumenes/shared/scripts_airflow/fraud_pipeline/`
-- Airflow DAGs → `big-data-stack/volumenes/shared/dags_airflow/`
-- Input events → `big-data-stack/volumenes/shared/minio/data/bronze/payments/`
+- Spark jobs → `bigdata_stack_platform/volumenes/shared/scripts_airflow/fraud_pipeline/`
+- Airflow DAGs → `bigdata_stack_platform/volumenes/shared/dags_airflow/`
+- Input events → `bigdata_stack_platform/volumenes/shared/minioshareddata/landing/payments/`
 
-**Important:** `publish.sh` contains a hardcoded `BIGDATA_BASE`. Update it to your local path of `big-data-stack/volumenes`.
+**Important:** `publish.sh` assumes `BIGDATA_BASE` points to `bigdata_stack_platform/volumenes`. If you cloned it to a different path, update that variable at the top of `publish.sh`.
 
 Then run:
 

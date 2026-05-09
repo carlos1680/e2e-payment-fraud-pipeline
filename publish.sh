@@ -4,7 +4,7 @@ set -e
 # ============================================================================
 # CONFIGURACIÓN DEL STACK
 # ============================================================================
-BIGDATA_BASE="$HOME/Documentos/docker-compose-contenedores/bigdata/volumenes"
+BIGDATA_BASE="$HOME/Documentos/repositoriosGithub/personal/bigdata_stack_platform/volumenes"
 BIGDATA_SHARED="$BIGDATA_BASE/shared"
 # Landing Zone donde Spark ve los archivos como locales
 BIGDATA_MINIO_SHARE="$BIGDATA_SHARED/minioshareddata" 
