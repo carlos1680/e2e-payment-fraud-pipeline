@@ -10,11 +10,13 @@ This project showcases a practical, portfolio-ready workflow:
 - **Serving/analytics** via **MariaDB** (and optionally **Superset**)
 - Optional **ML training** (Spark ML) + **batch scoring**
 
-Base environment (required): [BIGDATASTACK](https://github.com/carlos1680/big-data-stack.git)
+Base environment (required): [BIGDATASTACK](https://github.com/carlos1680/bigdata_stack_platform)
 
 Project repo: [e2e-payment-fraud-pipeline](https://github.com/carlos1680/e2e-payment-fraud-pipeline.git)
 
 ## 1) Architecture (high level)
+
+![Pipeline architecture](docs/architecture.svg)
 
 **Data flow**
 
@@ -147,9 +149,7 @@ You can browse them via **Adminer** at http://localhost:8089.
 
 ## 6) Notes / gotchas
 
-- The DAGs currently use `--jdbc-host 172.28.0.10`. If your BIGDATASTACK uses a different IP, either:
-  - update the DAGs, or
-  - (recommended) switch to `--jdbc-host mariadb` (service name on the Docker network).
+- The DAGs use `--jdbc-host mariadb` (Docker service name). This works out of the box with BIGDATASTACK's default Docker network — no hardcoded IPs required.
 - `spark_jobs/job_main.py` reads from the *shared MinIO disk mount* (`/opt/minio/shareddata/...`). This is intentional for the demo and matches BIGDATASTACK volume mappings.
 - If you get permission errors writing to MinIO paths, re-run `./publish.sh` (it applies `chmod/chown` to key folders).
 

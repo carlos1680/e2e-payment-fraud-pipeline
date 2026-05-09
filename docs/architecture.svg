@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="Segoe UI, Arial, sans-serif">
+
+  <!-- Background -->
+  <rect width="900" height="520" fill="#0f1117" rx="12"/>
+
+  <!-- Title -->
+  <text x="450" y="42" text-anchor="middle" fill="#e2e8f0" font-size="18" font-weight="700" letter-spacing="0.5">E2E Payment Fraud Pipeline</text>
+  <text x="450" y="62" text-anchor="middle" fill="#64748b" font-size="12">Medallion Architecture · Apache Spark · Airflow · MinIO · MariaDB</text>
+
+  <!-- ── AIRFLOW BANNER ── -->
+  <rect x="30" y="80" width="840" height="330" rx="8" fill="none" stroke="#1e293b" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="50" y="74" fill="#38bdf8" font-size="11" font-weight="600">Orchestrated by Apache Airflow</text>
+
+  <!-- ================================================================ -->
+  <!-- GENERATOR BOX -->
+  <rect x="52" y="115" width="110" height="80" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="107" y="142" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="600">DATA GENERATOR</text>
+  <!-- Python icon (simple) -->
+  <text x="107" y="164" text-anchor="middle" fill="#facc15" font-size="20">🐍</text>
+  <text x="107" y="183" text-anchor="middle" fill="#64748b" font-size="9">raw_generator.py</text>
+
+  <!-- Arrow: Generator → Bronze -->
+  <line x1="162" y1="155" x2="210" y2="155" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow-gray)"/>
+  <text x="186" y="148" text-anchor="middle" fill="#475569" font-size="9">JSON</text>
+
+  <!-- ================================================================ -->
+  <!-- MinIO container -->
+  <rect x="210" y="95" width="600" height="260" rx="8" fill="#0b1220" stroke="#1e40af" stroke-width="1.5"/>
+  <text x="510" y="117" text-anchor="middle" fill="#3b82f6" font-size="11" font-weight="700">MinIO  (S3-compatible object storage)</text>
+
+  <!-- ── BRONZE ZONE ── -->
+  <rect x="230" y="128" width="150" height="195" rx="6" fill="#1c1007" stroke="#92400e" stroke-width="1.5"/>
+  <rect x="230" y="128" width="150" height="26" rx="6" fill="#78350f"/>
+  <rect x="230" y="148" width="150" height="6" fill="#78350f"/>
+  <text x="305" y="146" text-anchor="middle" fill="#fbbf24" font-size="12" font-weight="700">🥉 BRONZE</text>
+  <text x="305" y="172" text-anchor="middle" fill="#d97706" font-size="10">bronze/payments/</text>
+  <text x="305" y="190" text-anchor="middle" fill="#92400e" font-size="10">Raw JSON events</text>
+  <text x="305" y="210" text-anchor="middle" fill="#78350f" font-size="22">📄</text>
+  <text x="305" y="238" text-anchor="middle" fill="#92400e" font-size="9">payments_*.json</text>
+  <text x="305" y="254" text-anchor="middle" fill="#78350f" font-size="9">• tx_id, user_id</text>
+  <text x="305" y="268" text-anchor="middle" fill="#78350f" font-size="9">• amount, merchant</text>
+  <text x="305" y="282" text-anchor="middle" fill="#78350f" font-size="9">• timestamp</text>
+  <text x="305" y="300" text-anchor="middle" fill="#78350f" font-size="9">• country, currency</text>
+
+  <!-- Spark arrow: Bronze → Silver -->
+  <line x1="380" y1="225" x2="430" y2="225" stroke="#f97316" stroke-width="2" marker-end="url(#arrow-spark)"/>
+  <rect x="385" y="196" width="40" height="20" rx="4" fill="#7c3aed"/>
+  <text x="405" y="210" text-anchor="middle" fill="#e9d5ff" font-size="9" font-weight="700">Spark</text>
+  <text x="405" y="240" text-anchor="middle" fill="#94a3b8" font-size="8">job_main.py</text>
+  <text x="405" y="251" text-anchor="middle" fill="#94a3b8" font-size="8">parse · clean</text>
+  <text x="405" y="262" text-anchor="middle" fill="#94a3b8" font-size="8">cast types</text>
+
+  <!-- ── SILVER ZONE ── -->
+  <rect x="430" y="128" width="150" height="195" rx="6" fill="#111827" stroke="#4b5563" stroke-width="1.5"/>
+  <rect x="430" y="128" width="150" height="26" rx="6" fill="#374151"/>
+  <rect x="430" y="148" width="150" height="6" fill="#374151"/>
+  <text x="505" y="146" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="700">🥈 SILVER</text>
+  <text x="505" y="172" text-anchor="middle" fill="#9ca3af" font-size="10">silver/payments_clean/</text>
+  <text x="505" y="190" text-anchor="middle" fill="#6b7280" font-size="10">Cleaned Parquet</text>
+  <text x="505" y="210" text-anchor="middle" fill="#6b7280" font-size="22">🗂️</text>
+  <text x="505" y="238" text-anchor="middle" fill="#6b7280" font-size="9">Parquet partitioned</text>
+  <text x="505" y="254" text-anchor="middle" fill="#4b5563" font-size="9">• typed schema</text>
+  <text x="505" y="268" text-anchor="middle" fill="#4b5563" font-size="9">• deduplicated</text>
+  <text x="505" y="282" text-anchor="middle" fill="#4b5563" font-size="9">• null-safe</text>
+  <text x="505" y="300" text-anchor="middle" fill="#4b5563" font-size="9">• enriched cols</text>
+
+  <!-- Spark arrow: Silver → Gold -->
+  <line x1="580" y1="225" x2="630" y2="225" stroke="#f97316" stroke-width="2" marker-end="url(#arrow-spark)"/>
+  <rect x="585" y="196" width="40" height="20" rx="4" fill="#7c3aed"/>
+  <text x="605" y="210" text-anchor="middle" fill="#e9d5ff" font-size="9" font-weight="700">Spark</text>
+  <text x="605" y="240" text-anchor="middle" fill="#94a3b8" font-size="8">silver_to_gold</text>
+  <text x="605" y="251" text-anchor="middle" fill="#94a3b8" font-size="8">rules + ML</text>
+  <text x="605" y="262" text-anchor="middle" fill="#94a3b8" font-size="8">score model</text>
+
+  <!-- ── GOLD ZONE ── -->
+  <rect x="630" y="128" width="160" height="195" rx="6" fill="#1a1500" stroke="#854d0e" stroke-width="1.5"/>
+  <rect x="630" y="128" width="160" height="26" rx="6" fill="#713f12"/>
+  <rect x="630" y="148" width="160" height="6" fill="#713f12"/>
+  <text x="710" y="146" text-anchor="middle" fill="#fde047" font-size="12" font-weight="700">🥇 GOLD</text>
+  <text x="710" y="172" text-anchor="middle" fill="#ca8a04" font-size="10">gold/payments_scored/</text>
+  <text x="710" y="188" text-anchor="middle" fill="#a16207" font-size="9">gold/predictions/</text>
+  <text x="710" y="206" text-anchor="middle" fill="#854d0e" font-size="22">📊</text>
+  <text x="710" y="232" text-anchor="middle" fill="#854d0e" font-size="9">• is_fraud flag</text>
+  <text x="710" y="246" text-anchor="middle" fill="#854d0e" font-size="9">• fraud_reason</text>
+  <text x="710" y="260" text-anchor="middle" fill="#854d0e" font-size="9">• risk_score</text>
+  <text x="710" y="274" text-anchor="middle" fill="#854d0e" font-size="9">• fraud_probability</text>
+  <text x="710" y="288" text-anchor="middle" fill="#854d0e" font-size="9">• ML predictions</text>
+  <text x="710" y="302" text-anchor="middle" fill="#854d0e" font-size="9">• Logistic Regression</text>
+
+  <!-- ================================================================ -->
+  <!-- Arrow: Gold → MariaDB -->
+  <line x1="710" y1="323" x2="710" y2="375" stroke="#f97316" stroke-width="2" marker-end="url(#arrow-spark)"/>
+  <text x="725" y="358" fill="#94a3b8" font-size="9">JDBC</text>
+
+  <!-- MariaDB box -->
+  <rect x="630" y="375" width="160" height="60" rx="8" fill="#1e293b" stroke="#0ea5e9" stroke-width="1.5"/>
+  <text x="710" y="396" text-anchor="middle" fill="#38bdf8" font-size="11" font-weight="700">🐬 MariaDB</text>
+  <text x="710" y="413" text-anchor="middle" fill="#64748b" font-size="9">payments_gold</text>
+  <text x="710" y="426" text-anchor="middle" fill="#64748b" font-size="9">predictions</text>
+
+  <!-- Arrow: MariaDB → Superset -->
+  <line x1="630" y1="405" x2="560" y2="405" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow-gray)" stroke-dasharray="4,2"/>
+  <text x="595" y="398" text-anchor="middle" fill="#475569" font-size="9">SQL</text>
+
+  <!-- Superset box -->
+  <rect x="440" y="375" width="120" height="60" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="500" y="396" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600">📈 Superset</text>
+  <text x="500" y="413" text-anchor="middle" fill="#475569" font-size="9">dashboards</text>
+  <text x="500" y="426" text-anchor="middle" fill="#475569" font-size="9">(optional)</text>
+
+  <!-- ================================================================ -->
+  <!-- ML training side arrow from Gold to model store -->
+  <line x1="790" y1="225" x2="840" y2="225" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrow-ml)"/>
+  <!-- model box inside MinIO (overlaid) -->
+
+  <!-- ================================================================ -->
+  <!-- FUTURE: Kafka badge -->
+  <rect x="52" y="450" width="180" height="52" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+  <text x="142" y="469" text-anchor="middle" fill="#475569" font-size="10" font-weight="600">📡 Future: Streaming</text>
+  <text x="142" y="484" text-anchor="middle" fill="#334155" font-size="9">Kafka → Bronze (real-time)</text>
+  <text x="142" y="495" text-anchor="middle" fill="#334155" font-size="9">watermarking · Spark Streaming</text>
+
+  <!-- DAG labels at bottom -->
+  <rect x="260" y="450" width="560" height="52" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+  <text x="540" y="468" text-anchor="middle" fill="#475569" font-size="10" font-weight="600">Airflow DAG execution order</text>
+  <text x="540" y="484" text-anchor="middle" fill="#334155" font-size="9">① payment_fraud_batch_pipeline  →  ② dag_silver_to_gold_mariadb_v1  →  ③ dag_train_model_from_gold_v1  →  ④ dag_score_and_write_mariadb_v1</text>
+  <text x="540" y="497" text-anchor="middle" fill="#1e3a5f" font-size="8">Bronze→Silver                         Silver→Gold + MariaDB                          Train ML Model                             Score + MariaDB</text>
+
+  <!-- ================================================================ -->
+  <!-- ARROW MARKERS -->
+  <defs>
+    <marker id="arrow-gray" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-spark" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#f97316"/>
+    </marker>
+    <marker id="arrow-ml" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#a855f7"/>
+    </marker>
+  </defs>
+
+</svg>

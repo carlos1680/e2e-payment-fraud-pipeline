@@ -43,7 +43,7 @@ with DAG(
               --minio-endpoint http://minio:9000 \
               --minio-access-key admin \
               --minio-secret-key admin123 \
-              --jdbc-host 172.28.0.10 \
+              --jdbc-host mariadb \
               --jdbc-db bigdata_db \
               --jdbc-user bigdata_user \
               --jdbc-pass bigdata_pass \
